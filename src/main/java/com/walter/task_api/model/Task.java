@@ -1,10 +1,10 @@
 package com.walter.task_api.model;
 
 import jakarta.persistence.*;
+
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "tasks")
 public class Task {
 
     @Id
@@ -18,7 +18,20 @@ public class Task {
 
     private boolean completed = false;
 
-    // Getters y setters (o usa Lombok: @Data en la clase)
+    public Task() {
+
+    }
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Customer[id=%d,title=%s,description=%s, done=%b]",
+                this.id, this.title, this.description, this.completed);
+    }
+
 
     public Long getId() {
         return id;
