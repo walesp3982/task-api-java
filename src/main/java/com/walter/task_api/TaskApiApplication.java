@@ -2,14 +2,15 @@ package com.walter.task_api;
 
 import com.walter.task_api.model.Task;
 import com.walter.task_api.repository.TaskRepository;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.Arrays;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class TaskApiApplication {
@@ -39,4 +40,15 @@ public class TaskApiApplication {
         };
     }
 
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/tasks/**")
+                        .allowedMethods("*")
+                        .allowedOrigins("http://localhost:4200");
+            }
+        };
+    }
 }
