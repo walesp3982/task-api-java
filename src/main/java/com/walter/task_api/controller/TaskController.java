@@ -1,24 +1,23 @@
 package com.walter.task_api.controller;
 
+import com.walter.task_api.controller.exceptions.TaskNotFoundByIdException;
 import com.walter.task_api.dto.CreateTaskDTO;
 import com.walter.task_api.model.Task;
 import com.walter.task_api.repository.TaskRepository;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 public class TaskController {
-    private final TaskRepository taskRepository;
+    private final TaskRepository repository;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping("/tasks")
     public Iterable<Task> getTasks() {
-        return taskRepository.findAll();
+        return repository.findAll();
     }
 
     @PostMapping("/tasks")
@@ -27,32 +26,33 @@ public class TaskController {
                 dto.title(),
                 dto.description()
         );
-        return taskRepository.save(task);
+        return repository.save(task);
     }
 
     @GetMapping("/tasks/{id}")
     public Task getTask(@PathVariable Long id) {
-        return taskRepository.findById(id).orElseThrow();
+        return repository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundByIdException(id));
     }
 
     @PutMapping("/tasks/{id}")
     public Task updateTask(@PathVariable Long id, @RequestBody Task newTask) {
 
-        return taskRepository.findById(id).map(
+        return repository.findById(id).map(
                 task -> {
                     task.setTitle(newTask.getTitle());
                     task.setDescription(newTask.getDescription());
                     task.setCompleted(newTask.isCompleted());
-                    return taskRepository.save(task);
+                    return repository.save(task);
                 }
         ).orElseGet(
-                () -> taskRepository.save(newTask)
+                () -> repository.save(newTask)
         );
     }
 
     @DeleteMapping("/tasks/{id}")
     public void deleteTask(@PathVariable Long id) {
-        taskRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
 }
